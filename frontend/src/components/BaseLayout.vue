@@ -18,9 +18,11 @@ import FooterComponent from './FooterComponent.vue';
 
 <style scoped>
 .layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    width: 100%;
+}
+
+main {
+    width: 100%;
 }
 
 </style>

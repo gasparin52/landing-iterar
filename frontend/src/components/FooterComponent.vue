@@ -19,7 +19,7 @@ footer {
     padding: .8rem;
     position: relative;
     bottom: 0;
-    width: 100vw;
+    width: 100%;
     margin-top: auto;
     box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.1);
 }

@@ -243,6 +243,11 @@ import MapIcon from '../assets/icons/map-pin.svg'
 // Carrusel de proyectos
 const carouselTrack = ref(null)
 const currentSlide = ref(0)
+const touchStartX = ref(0)
+const touchEndX = ref(0)
+const touchStartY = ref(0)
+const touchEndY = ref(0)
+const minSwipeDistance = 50
 const projects = ref([
   {
     title: 'Automatización Empresarial',
@@ -309,9 +314,50 @@ const goToSlide = (index) => {
   currentSlide.value = index
 }
 
+// Funciones para swipe/touch
+const handleTouchStart = (e) => {
+  touchStartX.value = e.touches[0].clientX
+  touchStartY.value = e.touches[0].clientY
+}
+
+const handleTouchMove = (e) => {
+  touchEndX.value = e.touches[0].clientX
+  touchEndY.value = e.touches[0].clientY
+}
+
+const handleTouchEnd = () => {
+  const diffX = touchStartX.value - touchEndX.value
+  const diffY = Math.abs(touchStartY.value - touchEndY.value)
+
+  // Solo ejecutar swipe si el movimiento horizontal es mayor que el vertical
+  // Esto evita conflictos con el scroll vertical
+  if (Math.abs(diffX) > diffY && Math.abs(diffX) > minSwipeDistance) {
+    if (diffX > 0) {
+      // Swipe izquierda - siguiente slide
+      nextSlide()
+    } else {
+      // Swipe derecha - slide anterior
+      prevSlide()
+    }
+  }
+
+  // Reset
+  touchStartX.value = 0
+  touchEndX.value = 0
+  touchStartY.value = 0
+  touchEndY.value = 0
+}
+
 let observer = null
 
 onMounted(() => {
+  // Agregar event listeners para touch/swipe en el carrusel
+  if (carouselTrack.value) {
+    carouselTrack.value.addEventListener('touchstart', handleTouchStart, { passive: true })
+    carouselTrack.value.addEventListener('touchmove', handleTouchMove, { passive: true })
+    carouselTrack.value.addEventListener('touchend', handleTouchEnd)
+  }
+
   // Configurar Intersection Observer para detectar cuando las secciones entran en viewport
   observer = new IntersectionObserver(
     (entries) => {
@@ -371,6 +417,14 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  // Limpiar event listeners del carrusel
+  if (carouselTrack.value) {
+    carouselTrack.value.removeEventListener('touchstart', handleTouchStart)
+    carouselTrack.value.removeEventListener('touchmove', handleTouchMove)
+    carouselTrack.value.removeEventListener('touchend', handleTouchEnd)
+  }
+
+  // Limpiar observer
   if (observer) {
     observer.disconnect()
   }
@@ -421,7 +475,7 @@ function handleSubmit() {
   text-align: center;
   opacity: 1 !important;
   transform: none !important;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero-background {
@@ -1147,15 +1201,48 @@ function handleSubmit() {
 
 @media (max-width: 900px) {
   .carousel-container {
-    padding: 0 60px;
+    padding: 0 20px;
+  }
+
+  .carousel-btn {
+    display: none;
+  }
+
+  .carousel-wrapper {
+    overflow: hidden;
+  }
+
+  .carousel-slide {
+    width: 85%;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .carousel-slide.side,
+  .carousel-slide.hidden {
+    display: none;
+  }
+
+  .carousel-slide.active {
+    animation: slideInMobile 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .project-image {
-    height: 300px;
+    height: 250px;
   }
 
   .project-content {
-    padding: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+@keyframes slideInMobile {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -1235,7 +1322,7 @@ function handleSubmit() {
 /* Responsive */
 @media (max-width: 900px) {
   .hero {
-    min-height: 90vh;
+    min-height: auto;
     padding: 6rem 1.5rem 4rem;
   }
 
@@ -1273,6 +1360,27 @@ function handleSubmit() {
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .section {
+    height: auto;
+    overflow: visible;
+  }
+
+  .contact {
+    padding-bottom: 6rem;
+    height: auto;
+    min-height: auto;
+  }
+
+  .contact-content {
+    height: auto;
+    overflow: visible;
+  }
+
+  .contact-form {
+    padding-bottom: 2rem;
+    height: auto;
   }
 }
 
@@ -1324,6 +1432,75 @@ function handleSubmit() {
   .orb-3 {
     width: 200px;
     height: 200px;
+  }
+
+  /* Carousel mobile optimizations */
+  .carousel-container {
+    padding: 0 10px;
+  }
+
+  .carousel-wrapper {
+    min-height: 50vh;
+    overflow: hidden;
+  }
+
+  .carousel-slide {
+    width: 95%;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .carousel-slide.side,
+  .carousel-slide.hidden {
+    display: none;
+  }
+
+  .carousel-slide.active {
+    animation: slideInMobile 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .project-image {
+    height: 220px;
+  }
+
+  .project-content {
+    padding: 1.2rem;
+  }
+
+  .project-content h3 {
+    font-size: 1.3rem;
+  }
+
+  .project-content p {
+    font-size: 0.9rem;
+  }
+
+  .tag {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .carousel-dots {
+    margin-top: 1.5rem;
+  }
+
+  .section {
+    height: auto;
+    overflow: visible;
+  }
+
+  .contact {
+    height: auto;
+    min-height: auto;
+  }
+
+  .contact-content {
+    height: fit-content;
+    overflow: visible;
+  }
+
+  .contact-form {
+    padding-bottom: 2rem;
+    height: auto;
   }
 }
 </style>

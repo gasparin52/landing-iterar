@@ -31,6 +31,22 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+#app {
+  width: 100%;
+  overflow: visible;
+}
+
 a {
   text-decoration: none;
   list-style: none;
