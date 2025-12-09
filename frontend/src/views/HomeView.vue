@@ -135,6 +135,9 @@
       </div>
     </section>
 
+    <!-- Tech Carousel Section -->
+    <TechCarousel />
+
     <!-- Projects Section -->
     <section id="projects" class="section projects" data-animate>
       <div class="container">
@@ -225,6 +228,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import BaseLayout from '../components/BaseLayout.vue'
 import BaseButton from '../components/Buttons/BaseButton.vue'
+import TechCarousel from '../components/TechCarousel.vue'
 import AutomatizacionIcon from '../assets/icons/automatizacion.svg'
 import DesarrolloIcon from '../assets/icons/desarrollo.svg'
 import AnaliticsIcon from '../assets/icons/analitics.svg'
